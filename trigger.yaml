@@ -21,6 +21,7 @@ spec:
     metadata:
       generateName: tekton-deploy-
     spec:
+      serviceAccountName: tekton-triggers-example-sa
       pipelineRef:
         name: tekton-deploy
       params:
@@ -30,10 +31,6 @@ spec:
           value: tekton-deployment
         - name: image
           value: chao2013/tekton-lab-app
-        - name: docker-username
-          value: chao2013
-        - name: docker-password
-          value: xxx
       workspaces:
         - name: source
           volumeClaimTemplate:
