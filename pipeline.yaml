@@ -7,8 +7,6 @@ spec:
     - name: repo-url
     - name: deployment-name
     - name: image
-    - name: docker-username
-    - name: docker-password
   workspaces:
     - name: source
   tasks:
@@ -59,22 +57,20 @@ spec:
           workspace: source
       runAfter:
         - install
-    - name: build-push
+    - name: buildpacks
       taskRef:
-        name: build-push
-      params:
-        - name: image
-          value: $(params.image)
-        - name: username
-          value: $(params.docker-username)
-        - name: password
-          value: $(params.docker-password)
-      workspaces:
-        - name: source
-          workspace: source
+        name: buildpacks
       runAfter:
         - test
         - lint
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: APP_IMAGE
+          value: "$(params.image)"
+        - name: BUILDER_IMAGE
+          value: paketobuildpacks/builder:base
     - name: deploy
       taskRef:
         name: kubernetes-actions
@@ -85,4 +81,4 @@ spec:
             - restart 
             - deployment/$(params.deployment-name)
       runAfter:
-        - build-push
+        - buildpacks

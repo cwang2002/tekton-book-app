@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildpacks-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildpacks-test-pipeline-run
+spec:
+  serviceAccountName: tekton-triggers-example-sa
+  pipelineRef:
+    name: tekton-deploy
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: buildpacks-source-pvc
+  params:
+    - name: image
+      value: chao2013/tekton-lab-app
+    - name: deployment-name
+      value: tekton-deployment
+    - name: repo-url
+      value: https://github.com/cwang2002/tekton-book-app.git
